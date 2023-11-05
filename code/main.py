@@ -20,6 +20,12 @@ class Main:
         pygame.time.set_timer(self.update_event, 150) # set_time parameters (event to trigger, time in ms)
         self.game_active = False
 
+        # audio
+        self.crunch_sound = pygame.mixer.Sound(join('..', 'audio', 'crunch.wav'))
+        self.bg_music = pygame.mixer.Sound(join('..', 'audio', 'arcade.ogg'))
+        self.bg_music.set_volume(0.2)
+        self.bg_music.play(-1)
+
     # Handles drawing of display surafce
     def draw_bg(self):
         self.display_surface.fill(LIGHT_GREEN)
@@ -45,6 +51,7 @@ class Main:
         if self.snake.body[0] == self.apple.position:
             self.snake.has_eaten = True
             self.apple.set_position() # Respawns an apple
+            self.crunch_sound.play()
         if self.snake.body[0] in self.snake.body[1:] or \
             not 0 <= self.snake.body[0].x < COLS or \
             not 0 <= self.snake.body[0].y < ROWS:
@@ -56,6 +63,24 @@ class Main:
     def quit(self):
         pygame.quit()
         exit()
+
+    def draw_shadow(self):
+        shadow_surf = pygame.Surface(self.display_surface.get_size())
+        shadow_surf.fill((0, 255, 0))
+        shadow_surf.set_colorkey((0, 255, 0))
+
+        #surf
+        # shadow_surf.blit(self.apple.scaled_surf, self.apple.scaled_rect.topleft + SHADOW_SIZE)
+        for surf, rect in self.snake.draw_data:
+            shadow_surf.blit(surf, rect.topleft + SHADOW_SIZE)
+
+        mask = pygame.mask.from_surface(shadow_surf)
+        mask.invert()
+        shadow_surf = mask.to_surface()
+        shadow_surf.set_colorkey((255, 255, 255))
+        shadow_surf.set_alpha(SHADOW_OPACITY)
+
+        self.display_surface.blit(shadow_surf, (0, 0))
 
     def run(self):
         while True:
@@ -79,6 +104,7 @@ class Main:
 
             # Drawing (draw order matters!)
             self.draw_bg()
+            self.draw_shadow()
             self.snake.draw()
             self.apple.draw()
 

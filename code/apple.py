@@ -10,6 +10,10 @@ class Apple:
         self.set_position()
         # Dynamic path recognition using join
         self.apple_surface = pygame.image.load(join('..', 'graphics', 'apple.png')).convert_alpha() # convert alpha converts the surface (the png in this case) into a file format that is more efficient for pygame
+        self.scaled_surf = self.apple_surface.copy()
+        self.scaled_rect = self.scaled_surf.get_rect(
+            center = (self.position.x * CELL_SIZE + CELL_SIZE / 2, self.position.y * CELL_SIZE + CELL_SIZE / 2)
+        )
     
     # Sets position for apple avoiding snake tiles
     def set_position(self):
@@ -20,7 +24,8 @@ class Apple:
     def draw(self):
         scale = 1 + sin(pygame.time.get_ticks() / 300) / 3
         self.scaled_surafce = pygame.transform.smoothscale_by(self.apple_surface, scale) # smoothscale_by params = (surface, scale factor)
-        self.scaled_rect = self.scaled_surafce.get_rect(center = ((self.position.x * CELL_SIZE) + (CELL_SIZE / 2), (self.position.y * CELL_SIZE) + (CELL_SIZE / 2))) # Draws a rectangle around the surface
+        self.scaled_rect = self.scaled_surafce.get_rect(
+            center = (self.position.x * CELL_SIZE + CELL_SIZE / 2, self.position.y * CELL_SIZE + CELL_SIZE / 2)) # Draws a rectangle around the surface
         self.display_surface.blit(self.scaled_surafce, self.scaled_rect)
         #rect = pygame.Rect(self.position.x * CELL_SIZE, self.position.y * CELL_SIZE, CELL_SIZE, CELL_SIZE)
         # blit stands for block image transfer (a method to put one surface on another)
